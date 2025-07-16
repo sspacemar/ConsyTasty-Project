@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link rel="stylesheet" href="codeCSS/page3.css">
+<link href='https://fonts.googleapis.com/css?family=Sofia' rel='stylesheet'>
+
+<body>
+    <header>
+        <h1>Order</h1>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <i class="bi bi-house-door" style="font-size: 30px; margin-right: 10px; cursor: pointer;"
+                onclick="window.location.href='index-en.html'"></i>
+            <i class="bi bi-basket" style="font-size: 30px; cursor: pointer;"
+                onclick="window.location.href='cart-en.html'"></i>
+
+            <!-- ปุ่มเปลี่ยนภาษา -->
+            <button onclick="window.location.href='page3.html'"
+                style="font-size:16px; padding:4px 10px; border-radius:5px; border:none; background:#FFC20D; color:#000; cursor:pointer; width:80px; height:32px;">
+                ไทย
+            </button>
+        </div>
+        <div class="clockTime">
+            <div id="clock"></div>
+        </div>
+    </header><br>
+    <div class="button-next-1">
+        <div class="button-page" onclick="window.location.href='index-en.html'">
+            <i class="bi bi-1-circle-fill"></i>
+        </div>
+        <div class="button-page" onclick="window.location.href='page2-en.html'">
+            <i class="bi bi-2-circle-fill"></i>
+        </div>
+        <div class="button-page" onclick="window.location.href='page3-en.html'">
+            <i class="bi bi-3-circle-fill"></i>
+        </div>
+        <div class="button-page" onclick="window.location.href='page4-en.html'">
+            <i class="bi bi-4-circle-fill"></i>
+        </div>
+        <div class="button-page" onclick="window.location.href='page5-en.html'">
+            <i class="bi bi-5-circle-fill"></i>
+        </div>
+        <div class="button-page" onclick="window.location.href='sum_order-en.html'">
+            <i class="bi bi-6-circle-fill"></i>
+        </div>
+    </div>
+    <br>
+    <div class="button-next-next">
+        <div class="button-next-page" onclick="window.location.href='page4-en.html'">Next
+        </div>
+        <h1 style="color: #FFC20D; margin-bottom: 5px;">Choose Vegetables</h1>
+        <h4 style="margin-top: 5px;color:#D9D9D9;">Select up to 2 items</h4>
+    </div>
+    <form action="index.php" method="post">
+        <div class="button-container">
+            <div class="button-slide">
+
+                <button type="button" name="vegetable" value="IcebergLettuce"><img src="img/veg/lettuce.png"><br>Iceberg
+                    Lettuce<br>+5 Baht</button>
+                <input type="hidden" name="vegetable-quantity[]" value="0">
+                <button type="button" name="vegetable" value="Tomato"><img src="img/veg/tomato.png"><br>Tomato<br>+5
+                    Baht</button>
+                <input type="hidden" name="vegetable-quantity[]" value="0">
+                <button type="button" name="vegetable" value="Cucumber"><img
+                        src="img/veg/cucumber.png"><br>Cucumber<br>+5 Baht</button>
+                <input type="hidden" name="vegetable-quantity[]" value="0">
+                <button type="button" name="vegetable" value="PickledCucumber"><img src="img/veg/pickle.png"><br>Pickled
+                    Cucumber<br>+5 Baht</button>
+                <input type="hidden" name="vegetable-quantity[]" value="0">
+                <button type="button" name="vegetable" value="GreenPepper"><img src="img/veg/greenpepper.png"><br>Green
+                    Pepper<br>+5 Baht</button>
+                <input type="hidden" name="vegetable-quantity[]" value="0">
+                <button type="button" name="vegetable" value="Olives"><img src="img/veg/olive.png"><br>Olives<br>+5
+                    Baht</button>
+                <input type="hidden" name="vegetable-quantity[]" value="0">
+                <button type="button" name="vegetable" value="RedOnion"><img src="img/veg/redonion.png"><br>Red
+                    Onion<br>+5 Baht</button>
+                <input type="hidden" name="vegetable-quantity[]" value="0">
+                <button type="button" name="vegetable" value="PickledChili"><img src="img/veg/jalapeno.png"><br>Pickled
+                    Chili<br>+5 Baht</button>
+                <input type="hidden" name="vegetable-quantity[]" value="0">
+                <button type="button" name="vegetable" value="Carrot"><img src="img/veg/carrot.png"><br>Carrot<br>+5
+                    Baht</button>
+                <input type="hidden" name="vegetable-quantity[]" value="0">
+            </div>
+        </div>
+        <br>
+        <!--button type="button" id="add-button">Add to Cart</button>
+        <button type="submit" id="submit-button">Submit</button-->
+    </form>
+
+    <div class="button-left">
+        <i id="prev-button" class="bi bi-chevron-left"></i>
+    </div>
+    <div class="button-right">
+        <i id="next-button" class="bi bi-chevron-right"></i>
+    </div>
+    <div id="selected-items">
+        <ul id="selected-list"></ul>
+    </div>
+    <script>
+        const buttons = document.querySelectorAll('button[name="vegetable"]');
+        const hiddenInputs = document.querySelectorAll('input[name="vegetable-quantity[]"]');
+        const selectedList = document.getElementById('selected-list');
+
+        let selectedVegetable = JSON.parse(localStorage.getItem('selectedVegetable')) || [];
+
+        buttons.forEach((button, index) => {
+            button.addEventListener('click', () => {
+                const numSelected = selectedVegetable.length;
+                const price = 5;  // Price for all vegetables
+
+                if (button.classList.contains('active')) {
+                    hiddenInputs[index].value = 0;
+                    button.classList.remove('active');
+
+                    const indexToRemove = selectedVegetable.findIndex(item => item.name === button.value);
+                    if (indexToRemove !== -1) {
+                        selectedVegetable.splice(indexToRemove, 1);
+                    }
+                } else if (numSelected < 2) {
+                    hiddenInputs[index].value = 1;
+                    button.classList.add('active');
+
+                    selectedVegetable.push({ name: button.value, price: price });
+                }
+
+                updateSelectedItems();
+                localStorage.setItem('selectedVegetable', JSON.stringify(selectedVegetable));
+            });
+        });
+
+        function updateSelectedItems() {
+            selectedList.innerHTML = '';
+
+            selectedVegetable.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = `${item.name} (+${item.price} Baht)`;
+                selectedList.appendChild(li);
+            });
+
+            localStorage.setItem('selectedVegetable', JSON.stringify(selectedVegetable));
+            const prices = selectedVegetable.map(item => item.price);
+            localStorage.setItem('selectedVegetablePrice', JSON.stringify(prices));
+        }
+
+        window.addEventListener('load', () => {
+            selectedVegetable = JSON.parse(localStorage.getItem('selectedVegetable')) || [];
+            selectedVegetable.forEach(item => {
+                const button = document.querySelector(`button[name="vegetable"][value="${item.name}"]`);
+                if (button) {
+                    button.classList.add('active');
+                    const index = Array.from(buttons).indexOf(button);
+                    hiddenInputs[index].value = 1;
+                }
+            });
+            updateSelectedItems();
+        });
+
+        // Slide buttons and clock script (same code as before)
+        const prevButton = document.getElementById('prev-button');
+        const nextButton = document.getElementById('next-button');
+        const buttonSlide = document.querySelector('.button-slide');
+
+        let slidePosition = 0;
+
+        nextButton.addEventListener('click', () => {
+            slidePosition -= 372 * 4;
+            const numSlides = Math.ceil(buttonSlide.children.length / 4);
+            if (slidePosition <= -372 * (numSlides - 1)) {
+                slidePosition = -372 * (numSlides - 1);
+                nextButton.style.display = 'none';
+            }
+            buttonSlide.style.left = `${slidePosition}px`;
+            prevButton.style.display = 'inline';
+        });
+
+        prevButton.addEventListener('click', () => {
+            slidePosition += 372 * 4;
+            if (slidePosition >= 0) {
+                slidePosition = 0;
+                prevButton.style.display = 'none';
+            }
+            buttonSlide.style.left = `${slidePosition}px`;
+            nextButton.style.display = 'inline';
+        });
+
+        function updateClock() {
+            var now = new Date();
+            var hours = now.getHours();
+            var minutes = now.getMinutes();
+            var seconds = now.getSeconds();
+
+            hours = hours < 10 ? '0' + hours : hours;
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+
+            var timeString = hours + ':' + minutes + ':' + seconds;
+            document.getElementById('clock').innerHTML = timeString;
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="th">
+    <meta charset="UTF-8">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link rel="stylesheet" href="codeCSS/page2.css">
+<link href='https://fonts.googleapis.com/css?family=Sofia' rel='stylesheet'>
+
+<body>
+    <header>
+        <h1>Order</h1>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <i class="bi bi-house-door" style="font-size: 30px; margin-right: 10px;"
+                onclick="window.location.href='index.html'"></i>
+            <i class="bi bi-basket" style="font-size: 30px;" onclick="window.location.href='cart.html'"></i>
+            <div class="clockTime" style="margin-left: 10px;">
+                <div id="clock"></div>
+            </div>
+            <button onclick="window.location.href='page2-en.html'"
+                style="font-size:16px; padding:4px 10px; border-radius:5px; border:none; background:#FFC20D; color:#000; cursor:pointer; width:80px; height:32px;">
+                Eng
+            </button>
+        </div>
+    </header><br>
+    <div class="button-next-1">
+        <div class="button-page" onclick="window.location.href='index.html'">
+            <i class="bi bi-1-circle-fill"></i>
+        </div>
+        <div class="button-page" onclick="window.location.href='page2.html'">
+            <i class="bi bi-2-circle-fill"></i>
+        </div>
+        <div class="button-page" onclick="window.location.href='page3.html'">
+            <i class="bi bi-3-circle-fill"></i>
+        </div>
+        <div class="button-page" onclick="window.location.href='page4.html'">
+            <i class="bi bi-4-circle-fill"></i>
+        </div>
+        <div class="button-page" onclick="window.location.href='page5.html'">
+            <i class="bi bi-5-circle-fill"></i>
+        </div>
+        <div class="button-page" onclick="window.location.href='sum_order.html'">
+            <i class="bi bi-6-circle-fill"></i>
+        </div>
+    </div>
+    <br>
+    <div class="button-next-next">
+        <div class="button-next-page" onclick="window.location.href='page3.html'">ต่อไป
+        </div>
+        <h1 style="color: #FFC20D; margin-bottom: 5px;">เลือกเนื้อสัตว์</h1>
+        <h4 style="margin-top: 5px;color:#D9D9D9;">เลือกได้ 2 อย่าง</h4>
+    </div>
+    <form action="index.php" method="post">
+        <div class="button-container">
+            <div class="button-slide">
+                <button type="button" name="meat" value="Bacon">
+                    <img src="img/meat/bacon.png"><br>เบคอน<br>+30บาท</button>
+                <input type="hidden" name="meat-quantity[]" value="0">
+                <button type="button" name="meat" value="BeefSteak">
+                    <img src="img/meat/beef.png"><br>สเต็กเนื้อ<br>+30บาท</button>
+                <input type="hidden" name="meat-quantity[]" value="0">
+                <button type="button" name="meat" value="Tuna">
+                    <img src="img/meat/tuna.png"><br>ทูน่า<br>+20บาท</button>
+                <input type="hidden" name="meat-quantity[]" value="0">
+                <button type="button" name="meat" value="BulgogiChicken">
+                    <img src="img/meat/chicken.png"><br>ไก่บูลโกกิ<br>+20บาท</button>
+                <input type="hidden" name="meat-quantity[]" value="0">
+                <button type="button" name="meat" value="Ham">
+                    <img src="img/meat/ham.png"><br>แฮมหมู<br>+30บาท</button>
+                <input type="hidden" name="meat-quantity[]" value="0">
+                <button type="button" name="meat" value="Pepperoni"><img
+                        src="img/meat/pepper.png"><br>เปปเปอโรนี<br>+30บาท</button>
+                <input type="hidden" name="meat-quantity[]" value="0">
+            </div>
+        </div>
+        <br>
+        <!--button type="button" id="add-button">Add to Cart</button>
+      <button type="submit">Submit</button-->
+    </form>
+
+    <div class="button-left">
+        <i id="prev-button" class="bi bi-chevron-left"></i>
+    </div>
+    <div class="button-right">
+        <i id="next-button" class="bi bi-chevron-right"></i>
+    </div>
+    <div id="selected-items">
+        <ul id="selected-list"></ul>
+    </div>
+
+    <script>
+        const buttons = document.querySelectorAll('button[name="meat"]');
+        const hiddenInputs = document.querySelectorAll('input[name="meat-quantity[]"]');
+        const selectedList = document.getElementById('selected-list');
+        const prevButton = document.getElementById('prev-button');
+        const nextButton = document.getElementById('next-button');
+        const buttonSlide = document.querySelector('.button-slide');
+
+        // Meat prices
+        const meatPrices = {
+            "Bacon": 30,
+            "BeefSteak": 30,
+            "Tuna": 20,
+            "BulgogiChicken": 20,
+            "Ham": 30,
+            "Pepperoni": 30
+        };
+
+        let selectedMeats = JSON.parse(localStorage.getItem('selectedMeats')) || [];
+
+        function updateSelectedItems() {
+
+            let totalPrice = 0;
+            let html = '';
+            selectedMeats.forEach(item => {
+                html += `<li>${item.name} (+${item.price} Baht)</li>`;
+                totalPrice += item.price;
+            });
+            selectedList.innerHTML = html + `<li><strong>Total price: ${totalPrice} Baht</strong></li>`;
+
+            localStorage.setItem('selectedMeats', JSON.stringify(selectedMeats));
+            const prices = selectedMeats.map(item => item.price);
+            localStorage.setItem('selectedMeatsPrice', JSON.stringify(prices));
+        }
+
+        buttons.forEach((button, index) => {
+            button.addEventListener('click', () => {
+                const isActive = button.classList.contains('active');
+
+                if (isActive) {
+                    button.classList.remove('active');
+                    hiddenInputs[index].value = 0;
+                    selectedMeats = selectedMeats.filter(item => item.name !== button.value);
+                } else {
+                    // If less than 2 selected
+                    if (selectedMeats.length < 2) {
+                        button.classList.add('active');
+                        hiddenInputs[index].value = 1;
+                        // Add meat and price to selectedMeats
+                        selectedMeats.push({
+                            name: button.value,
+                            price: meatPrices[button.value] || 0
+                        });
+                    } else {
+                        alert('You can only select up to 2 items!');
+                    }
+                }
+                updateSelectedItems();
+            });
+        });
+
+        // Load selections on page load
+        window.addEventListener('load', () => {
+            selectedMeats.forEach(item => {
+                const button = document.querySelector(`button[name="meat"][value="${item.name}"]`);
+                if (button) {
+                    button.classList.add('active');
+                    const index = Array.from(buttons).indexOf(button);
+                    hiddenInputs[index].value = 1;
+                }
+            });
+            updateSelectedItems();
+        });
+
+        // Slide left/right (unchanged)
+        let slidePosition = 0;
+
+        nextButton.addEventListener('click', () => {
+            slidePosition -= 320 * 4;
+            if (slidePosition <= -745) {
+                slidePosition = -745;
+                nextButton.style.display = 'none';
+            }
+            buttonSlide.style.left = `${slidePosition}px`;
+            prevButton.style.display = 'inline';
+        });
+
+        prevButton.addEventListener('click', () => {
+            slidePosition += 320 * 4;
+            if (slidePosition >= 0) {
+                slidePosition = 0;
+                prevButton.style.display = 'none';
+            }
+            buttonSlide.style.left = `${slidePosition}px`;
+            nextButton.style.display = 'inline';
+        });
+
+        // Clock unchanged
+        function updateClock() {
+            var now = new Date();
+            var hours = now.getHours();
+            var minutes = now.getMinutes();
+            var seconds = now.getSeconds();
+
+            hours = hours < 10 ? '0' + hours : hours;
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+
+            var timeString = hours + ':' + minutes + ':' + seconds;
+            document.getElementById('clock').innerHTML = timeString;
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link href='https://fonts.googleapis.com/css?family=Sofia' rel='stylesheet'>
+<link rel="stylesheet" href="codeCSS/page5.css">
+
+<body>
+  <header>
+    <h1>Order</h1>
+    <div style="display: flex; align-items: center; gap: 15px;">
+      <i class="bi bi-house-door" style="font-size: 30px; margin-right: 10px; cursor: pointer;"
+        onclick="window.location.href='index-en.html'"></i>
+      <i class="bi bi-basket" style="font-size: 30px; cursor: pointer;"
+        onclick="window.location.href='cart-en.html'"></i>
+      <!-- ปุ่มเปลี่ยนภาษา -->
+      <button onclick="window.location.href='page5.html'"
+        style="font-size:16px; padding:4px 10px; border-radius:5px; border:none; background:#FFC20D; color:#000; cursor:pointer; width:80px; height:32px;">
+        ไทย
+      </button>
+    </div>
+    <div class="clockTime">
+      <div id="clock"></div>
+    </div>
+  </header><br>
+
+  <div class="button-next-1">
+    <div class="button-page" onclick="window.location.href='index-en.html'">
+      <i class="bi bi-1-circle-fill"></i>
+    </div>
+    <div class="button-page" onclick="window.location.href='page2-en.html'">
+      <i class="bi bi-2-circle-fill"></i>
+    </div>
+    <div class="button-page" onclick="window.location.href='page3-en.html'">
+      <i class="bi bi-3-circle-fill"></i>
+    </div>
+    <div class="button-page" onclick="window.location.href='page4-en.html'">
+      <i class="bi bi-4-circle-fill"></i>
+    </div>
+    <div class="button-page" onclick="window.location.href='page5-en.html'">
+      <i class="bi bi-5-circle-fill"></i>
+    </div>
+    <div class="button-page" onclick="window.location.href='sum_order-en.html'">
+      <i class="bi bi-6-circle-fill"></i>
+    </div>
+  </div>
+  <br>
+
+  <div class="button-next-next">
+    <div class="button-next-page" onclick="window.location.href='sum_order-en.html'">Next
+    </div>
+    <h1 style="color: #FFC20D; margin-bottom: 5px;">Choose Toppings</h1>
+    <h4 style="margin-top: 5px;color:#D9D9D9;">Select up to 2</h4>
+  </div>
+
+  <form action="index.php" method="post" id="toppingForm">
+    <div class="button-container">
+      <div class="button-slide">
+        <button type="button" name="topping" value="NoTopping" class="topping-btn">
+          <img src="img/sauce/icon1.png"><br><br>No Topping
+        </button>
+        <input type="hidden" name="topping-quantity[]" value="0">
+
+        <button type="button" name="topping" value="MozzarellaCheese" class="topping-btn">
+          <img src="img/topping/mozcheese.png" width="150" height="100"><br>Mozzarella Cheese<br>+20 THB
+        </button>
+        <input type="hidden" name="topping-quantity[]" value="0">
+
+        <button type="button" name="topping" value="SlicedCheese" class="topping-btn">
+          <img src="img/topping/cheese.png" width="150" height="100"><br>Sliced Cheese<br>+20 THB
+        </button>
+        <input type="hidden" name="topping-quantity[]" value="0">
+
+        <button type="button" name="topping" value="FriedEgg" class="topping-btn">
+          <img src="img/topping/egg.png" width="150" height="100"><br>Fried Egg<br>+10 THB
+        </button>
+        <input type="hidden" name="topping-quantity[]" value="0">
+      </div>
+    </div>
+    <br>
+    <button type="submit" style="display:none;">Submit</button>
+  </form>
+
+  <script>
+    const toppingPrices = {
+      "SlicedCheese": 20,
+      "MozzarellaCheeses": 20,
+      "FriedEgg": 10,
+      "NoTopping": 0
+    };
+    const buttons = document.querySelectorAll('button[name="topping"]');
+    const hiddenInputs = document.querySelectorAll('input[name="topping-quantity[]"]');
+    let selectedTopping = JSON.parse(localStorage.getItem('selectedTopping')) || [];
+
+    buttons.forEach((button, index) => {
+      button.addEventListener('click', () => {
+        if (button.value === "NoTopping") {
+          buttons.forEach((btn, i) => {
+            btn.classList.remove('active');
+            hiddenInputs[i].value = 0;
+          });
+          button.classList.add('active');
+          hiddenInputs[index].value = 1;
+          selectedTopping = [button.value];
+        } else {
+          const noSelectButton = Array.from(buttons).find(b => b.value === "NoTopping");
+          if (noSelectButton && noSelectButton.classList.contains('active')) {
+            const noSelectIndex = Array.from(buttons).indexOf(noSelectButton);
+            noSelectButton.classList.remove('active');
+            hiddenInputs[noSelectIndex].value = 0;
+            const idx = selectedTopping.indexOf("NoTopping");
+            if (idx !== -1) selectedTopping.splice(idx, 1);
+          }
+          if (button.classList.contains('active')) {
+            hiddenInputs[index].value = 0;
+            button.classList.remove('active');
+            const indexToRemove = selectedTopping.indexOf(button.value);
+            if (indexToRemove !== -1) {
+              selectedTopping.splice(indexToRemove, 1);
+            }
+          } else if (selectedTopping.length < 2) {
+            hiddenInputs[index].value = 1;
+            button.classList.add('active');
+            selectedTopping.push(button.value);
+          }
+        }
+        updateSelectedItems();
+        localStorage.setItem('selectedTopping', JSON.stringify(selectedTopping));
+      });
+    });
+
+    function updateSelectedItems() {
+      const activeButtons = document.querySelectorAll('button[name="topping"].active');
+      const activeValues = Array.from(activeButtons).map(btn => btn.value);
+      localStorage.setItem('selectedTopping', JSON.stringify(activeValues));
+
+      const prices = activeValues.map(topping => toppingPrices[topping] || 0);
+      localStorage.setItem('selectedToppingPrice', JSON.stringify(prices));
+    }
+
+    window.addEventListener('load', () => {
+      selectedTopping.forEach(topping => {
+        const button = document.querySelector(`button[name="topping"][value="${topping}"]`);
+        if (button) {
+          button.classList.add('active');
+          const index = Array.from(buttons).indexOf(button);
+          hiddenInputs[index].value = 1;
+        }
+      });
+      updateSelectedItems();
+    });
+
+    function updateClock() {
+      var now = new Date();
+      var hours = now.getHours();
+      var minutes = now.getMinutes();
+      var seconds = now.getSeconds();
+
+      hours = hours < 10 ? '0' + hours : hours;
+      minutes = minutes < 10 ? '0' + minutes : minutes;
+      seconds = seconds < 10 ? '0' + seconds : seconds;
+
+      var timeString = hours + ':' + minutes + ':' + seconds;
+      document.getElementById('clock').innerHTML = timeString;
+    }
+
+    setInterval(updateClock, 1000);
+    updateClock();
+  </script>
+</body>
+
+</html>
